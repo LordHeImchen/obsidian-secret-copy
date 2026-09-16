@@ -1,0 +1,88 @@
+/* ── Blur: ==text== blurred by default, revealed on hover ─────────────── */
+/* Double-class specificity beats Obsidian's app.css .markdown-rendered mark */
+
+.markdown-rendered.markdown-rendered mark,
+.markdown-preview-view.markdown-preview-view mark {
+  background-color: rgba(120, 120, 120, 0.2) !important;
+  background: rgba(120, 120, 120, 0.2) !important;
+  color: rgba(120, 120, 120, 0.6) !important;
+  filter: blur(5px);
+  border-radius: 4px;
+  padding: 1px 4px;
+  cursor: pointer;
+  transition: filter 0.2s ease, color 0.2s ease, background 0.2s ease;
+  user-select: none;
+  outline: 1px solid rgba(150, 150, 150, 0.3);
+}
+
+.markdown-rendered.markdown-rendered mark:hover,
+.markdown-preview-view.markdown-preview-view mark:hover {
+  background-color: rgba(120, 120, 120, 0.1) !important;
+  background: rgba(120, 120, 120, 0.1) !important;
+  color: inherit !important;
+  filter: none;
+  outline: 1px solid rgba(150, 150, 150, 0.2);
+  user-select: text;
+}
+
+/* ── Copy button ────────────────────────────────────────────────────────── */
+.secret-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  margin-left: 5px;
+  padding: 1px 7px;
+  height: 1.5em;
+  font-size: 1em;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: var(--interactive-normal);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  cursor: pointer;
+  vertical-align: middle;
+  filter: none !important;
+  color: var(--text-muted) !important;
+  user-select: none;
+  transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease,
+              box-shadow 0.1s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+}
+
+.secret-copy-icon {
+  font-size: 1.4em;
+  line-height: 1;
+}
+
+.secret-copy-btn:hover {
+  background: var(--interactive-hover) !important;
+  color: var(--text-normal) !important;
+  border-color: var(--background-modifier-border-hover);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+
+/* ── Toast — fixed to top-centre of the Obsidian window ─────────────────── */
+#secret-copy-toast {
+  position: fixed;
+  top: 22vh;
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  z-index: 99999;
+  padding: 6px 18px;
+  border-radius: 6px;
+  font-size: 0.85em;
+  font-weight: 600;
+  background: var(--background-modifier-success, rgba(35,130,35,0.95));
+  color: var(--text-on-accent, #fff);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+
+#secret-copy-toast.secret-copy-toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
