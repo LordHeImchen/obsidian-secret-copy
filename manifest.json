@@ -1,7 +1,7 @@
 {
   "id": "obsidian-secret-copy",
   "name": "Secret Copy",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "minAppVersion": "1.0.0",
   "description": "Blurs ==highlighted== text by default and adds a one-click copy button — reveal secrets only on hover, copy without exposing them on screen.",
   "author": "LordHeImchen",
