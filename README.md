@@ -1,15 +1,17 @@
 # Secret Copy — Obsidian Plugin
 
-Blurs `==highlighted==` text by default and adds a one-click copy button next to each secret. Reveal on hover, copy without ever exposing the value on screen.
+Blurs `{{secrets}}` by default and adds a one-click copy button next to each one. Reveal on hover, copy without ever exposing the value on screen.
 
 ## Features
 
-- All `==highlighted==` text is blurred by default
+- Everything wrapped in `{{double curly braces}}` is blurred by default
+- Normal `==highlights==` stay untouched — and `=={{secret}}==` gives you a highlighted secret
 - Hover to reveal
 - Click `⎘` to copy the value to clipboard
 - "✓ Copied" toast confirmation appears at the top of the window
 - No value is ever shown in plain text during the copy action
-- Works in reading view and preview mode
+- Copies the exact value as written, even if it contains `*`, `_` or spaces
+- Works in reading view, Live Preview and source mode, including tables
 
 ## Installation
 
@@ -28,15 +30,21 @@ Blurs `==highlighted==` text by default and adds a one-click copy button next to
 
 ## Usage
 
-Wrap any secret in `==double equals==` in your notes:
+Wrap any secret in `{{double curly braces}}` in your notes:
 
 ```markdown
 | Token | Value |
 |-------|-------|
-| API Key | ==sk-abc123== |
+| API Key | {{sk-abc123}} |
 ```
 
 The value will be blurred. Hover to peek, click `⎘` to copy silently.
+
+Notes:
+
+- A secret must fit on one line and cannot contain `}}`.
+- `{{date}}`, `{{time}}` and `{{title}}` (core Templates placeholders) are not treated as secrets.
+- Inside inline code or code blocks, `{{…}}` is left as plain text.
 
 ## License
 

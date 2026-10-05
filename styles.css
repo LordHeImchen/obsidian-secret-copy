@@ -1,67 +1,52 @@
-/* ── Blur: ==text== blurred by default, revealed on hover ─────────────── */
-/* Double-class specificity beats Obsidian's app.css .markdown-rendered mark */
+/* ── Blur: {{secret}} blurred by default, revealed on hover ────────────── */
+/* Same span class in reading view (wrapped by the post-processor) and in    */
+/* the editor (a CodeMirror mark decoration), so one rule covers both.      */
 
-.markdown-rendered.markdown-rendered mark,
-.markdown-preview-view.markdown-preview-view mark {
+.secret-copy-secret {
   background-color: rgba(120, 120, 120, 0.2) !important;
-  background: rgba(120, 120, 120, 0.2) !important;
   color: rgba(120, 120, 120, 0.6) !important;
   filter: blur(5px);
   border-radius: 4px;
   padding: 1px 4px;
   cursor: pointer;
-  transition: filter 0.2s ease, color 0.2s ease, background 0.2s ease;
+  transition: filter 0.2s ease, color 0.2s ease, background-color 0.2s ease;
   user-select: none;
   outline: 1px solid rgba(150, 150, 150, 0.3);
 }
 
-.markdown-rendered.markdown-rendered mark:hover,
-.markdown-preview-view.markdown-preview-view mark:hover {
+.secret-copy-secret:hover {
   background-color: rgba(120, 120, 120, 0.1) !important;
-  background: rgba(120, 120, 120, 0.1) !important;
-  color: inherit !important;
+  color: var(--text-normal) !important;
   filter: none;
   outline: 1px solid rgba(150, 150, 150, 0.2);
   user-select: text;
 }
 
-/* ── Same blur in the editor (Live Preview / Source, incl. table cells) ─── */
-/* There ==text== is a CodeMirror .cm-highlight span, not a <mark>, so the  */
-/* rules above never matched and Obsidian's yellow highlight showed through. */
-
-.markdown-source-view.mod-cm6 .cm-content .cm-highlight {
-  background-color: rgba(120, 120, 120, 0.2) !important;
-  background: rgba(120, 120, 120, 0.2) !important;
-  color: rgba(120, 120, 120, 0.6) !important;
-  filter: blur(5px);
-  transition: filter 0.2s ease, color 0.2s ease, background 0.2s ease;
+/* In the editor the secret has to stay editable, and the {{ }} braces stay  */
+/* sharp but faint and share the grey background, so brace + secret + brace */
+/* read as one chip — that marks the boundaries.                            */
+.markdown-source-view.mod-cm6 .cm-content .secret-copy-secret {
+  border-radius: 0;
+  padding: 1px 0;
+  outline: none;
+  user-select: text;
 }
 
-.markdown-source-view.mod-cm6 .cm-content .cm-highlight:hover {
-  background-color: rgba(120, 120, 120, 0.1) !important;
-  background: rgba(120, 120, 120, 0.1) !important;
-  color: inherit !important;
-  filter: none;
-}
-
-/* The == markers stay sharp but faint, and share the grey background so    */
-/* marker + secret + marker read as one chip — that marks the boundaries.   */
-.markdown-source-view.mod-cm6 .cm-content .cm-formatting-highlight,
-.markdown-source-view.mod-cm6 .cm-content .cm-formatting-highlight:hover {
+.markdown-source-view.mod-cm6 .cm-content .secret-copy-brace {
   filter: none !important;
   color: var(--text-faint) !important;
-  background: rgba(120, 120, 120, 0.2) !important;
+  background-color: rgba(120, 120, 120, 0.2);
   font-size: 0.8em;
 }
 
-/* Rounded outer ends: opening marker on the left, closing one on the right. */
-.markdown-source-view.mod-cm6 .cm-content .cm-formatting-highlight:has(+ .cm-highlight:not(.cm-formatting)) {
+.markdown-source-view.mod-cm6 .cm-content .secret-copy-brace-open {
   border-radius: 4px 0 0 4px;
-  padding-left: 3px;
+  padding: 1px 0 1px 3px;
 }
-.markdown-source-view.mod-cm6 .cm-content .cm-highlight:not(.cm-formatting) + .cm-formatting-highlight {
+
+.markdown-source-view.mod-cm6 .cm-content .secret-copy-brace-close {
   border-radius: 0 4px 4px 0;
-  padding-right: 3px;
+  padding: 1px 3px 1px 0;
 }
 
 /* ── Copy button ────────────────────────────────────────────────────────── */
