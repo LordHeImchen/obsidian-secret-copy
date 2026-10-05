@@ -3,7 +3,7 @@
   "name": "Secret Copy",
   "version": "1.1.0",
   "minAppVersion": "1.0.0",
-  "description": "Blurs ==highlighted== text by default and adds a one-click copy button — reveal secrets only on hover, copy without exposing them on screen.",
+  "description": "Blurs {{secrets}} in your notes and adds a one-click copy button. Reveal on hover, copy without showing the value on screen.",
   "author": "LordHeImchen",
   "authorUrl": "https://github.com/LordHeImchen",
   "fundingUrl": "",
