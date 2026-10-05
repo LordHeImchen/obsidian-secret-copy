@@ -15,7 +15,7 @@
  * whatever it wants with the cell and the feedback still shows correctly.
  */
 
-const { Plugin } = require('obsidian');
+const { Plugin, editorLivePreviewField } = require('obsidian');
 const { ViewPlugin, Decoration, WidgetType } = require('@codemirror/view');
 const { RangeSetBuilder } = require('@codemirror/state');
 const { syntaxTree } = require('@codemirror/language');
@@ -155,6 +155,29 @@ class CopyWidget extends WidgetType {
   ignoreEvent() { return true; }
 }
 
+// Live Preview hides Markdown markers on lines without the cursor, so a_b_c
+// would show as an italic "abc". Outside the cursor the whole {{…}} is
+// replaced by this widget, which shows the raw value and hides the braces.
+class SecretWidget extends WidgetType {
+  constructor(raw) {
+    super();
+    this.raw = raw;
+  }
+  eq(other) { return other.raw === this.raw; }
+  toDOM() {
+    const wrap = document.createElement('span');
+    wrap.className = 'secret-copy-widget';
+    const span = document.createElement('span');
+    span.className = SECRET_CLASS;
+    span.textContent = this.raw;
+    wrap.append(span, makeButton(this.raw.trim()));
+    return wrap;
+  }
+  // Clicks on the secret move the cursor into it so it can be edited; the
+  // copy button's events are swallowed before CodeMirror sees them.
+  ignoreEvent() { return false; }
+}
+
 const secretMark = Decoration.mark({ class: SECRET_CLASS });
 const openBraceMark = Decoration.mark({ class: 'secret-copy-brace secret-copy-brace-open' });
 const closeBraceMark = Decoration.mark({ class: 'secret-copy-brace secret-copy-brace-close' });
@@ -164,15 +187,43 @@ function inCode(tree, pos) {
   return /code|frontmatter|comment|math/i.test(name);
 }
 
+function isLivePreview(state) {
+  return !!(editorLivePreviewField && state.field(editorLivePreviewField, false));
+}
+
+// Live Preview draws tables as one block widget. A replace decoration inside
+// it stops the table's copy buttons from appearing on first render, so table
+// rows keep the plain marks.
+function inTable(state, tree, pos) {
+  const line = state.doc.lineAt(pos);
+  if (line.text.trimStart().startsWith('|')) return true;
+  let table = false;
+  tree.iterate({ from: line.from, to: line.to, enter: n => {
+    if (/table/i.test(n.name)) table = true;
+  } });
+  return table;
+}
+
+function cursorTouches(state, from, to) {
+  return state.selection.ranges.some(r => r.from <= to && r.to >= from);
+}
+
 function buildDecorations(view) {
   const builder = new RangeSetBuilder();
-  const tree = syntaxTree(view.state);
+  const { state } = view;
+  const tree = syntaxTree(state);
+  const livePreview = isLivePreview(state);
   for (const { from, to } of view.visibleRanges) {
-    const text = view.state.doc.sliceString(from, to);
+    const text = state.doc.sliceString(from, to);
     for (const m of text.matchAll(SECRET_RE)) {
       if (!isSecret(m[1])) continue;
       const start = from + m.index, end = start + m[0].length;
       if (inCode(tree, start + 2)) continue;
+      if (livePreview && !cursorTouches(state, start, end) &&
+          !inTable(state, tree, start)) {
+        builder.add(start, end, Decoration.replace({ widget: new SecretWidget(m[1]) }));
+        continue;
+      }
       builder.add(start, start + 2, openBraceMark);
       builder.add(start + 2, end - 2, secretMark);
       builder.add(end - 2, end, closeBraceMark);
@@ -190,7 +241,8 @@ const secretEditorPlugin = ViewPlugin.fromClass(class {
     this.decorations = buildDecorations(view);
   }
   update(update) {
-    if (update.docChanged || update.viewportChanged ||
+    if (update.docChanged || update.viewportChanged || update.selectionSet ||
+        isLivePreview(update.startState) !== isLivePreview(update.state) ||
         syntaxTree(update.startState) !== syntaxTree(update.state)) {
       this.decorations = buildDecorations(update.view);
     }

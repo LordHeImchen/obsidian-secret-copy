@@ -4,8 +4,7 @@ Keep passwords, API keys and tokens in your notes without showing them on screen
 
 Useful when you share your screen, present, or work where people can see your monitor.
 
-<!-- Screenshot: add docs/demo.gif and uncomment the next line -->
-<!-- ![Blurred secrets with copy buttons in a table](docs/demo.gif) -->
+![Blurred secrets with copy buttons in a table](docs/demo.gif)
 
 ## Features
 

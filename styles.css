@@ -32,6 +32,15 @@
   user-select: text;
 }
 
+/* Live Preview shows a secret without the cursor as a widget: same chip as */
+/* reading view, braces hidden.                                             */
+.markdown-source-view.mod-cm6 .cm-content .secret-copy-widget .secret-copy-secret {
+  border-radius: 4px;
+  padding: 1px 4px;
+  outline: 1px solid rgba(150, 150, 150, 0.3);
+  user-select: none;
+}
+
 .markdown-source-view.mod-cm6 .cm-content .secret-copy-brace {
   filter: none !important;
   color: var(--text-faint) !important;
