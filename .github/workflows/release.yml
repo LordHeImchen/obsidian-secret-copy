@@ -1,0 +1,57 @@
+# Publishes the plugin files for a version tag (e.g. 1.1.1) with GitHub
+# artifact attestations, so users can verify they were built from this repo.
+#
+# Push a tag to create a draft release, or run it manually for an existing tag
+# to (re)attach attested files to that release.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to release, e.g. 1.1.1"
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Check tag matches manifest version
+        run: |
+          VERSION=$(jq -r .version manifest.json)
+          if [ "$VERSION" != "$TAG" ]; then
+            echo "Tag $TAG does not match manifest.json version $VERSION"
+            exit 1
+          fi
+
+      - uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            main.js
+            styles.css
+            manifest.json
+
+      - name: Attach files to release
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" main.js manifest.json styles.css --clobber
+          else
+            gh release create "$TAG" main.js manifest.json styles.css \
+              --title "$TAG" --draft --verify-tag
+          fi

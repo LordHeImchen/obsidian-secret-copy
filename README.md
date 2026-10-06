@@ -37,6 +37,8 @@ Wi-Fi password: {{correct horse battery staple}}
 
 Secret Copy hides values **visually**. It does not encrypt them. Your secrets are still stored as plain text in the `.md` file, so anyone or anything with access to your vault files can read them: sync services, backups, other plugins and Obsidian's search.
 
+**Clipboard:** the plugin only *writes* to the clipboard, when you click `⎘`. It never reads the clipboard.
+
 Use it to stop people reading over your shoulder or on a shared screen. For real protection at rest, keep sensitive credentials in a password manager or an encrypted vault.
 
 ## Installation
